@@ -1,12 +1,13 @@
 ﻿using System;
+using System.Threading.Tasks;
+using Common;
 
-internal class Server
+internal class Server : IServer
 {
-    public int Add(int a, int b)
+    public async Task<int> AddAsync(int a, int b)
     {
         // Log to STDERR so as to not corrupt the STDOUT pipe that we may be using for JSON-RPC.
-        Console.Error.WriteLine($"Received request: {a} + {b}");
-
+        await Console.Error.WriteLineAsync($"Received request: {a} + {b}");
         return a + b;
     }
 }

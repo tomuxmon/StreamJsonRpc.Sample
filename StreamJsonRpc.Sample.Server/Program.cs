@@ -9,15 +9,7 @@ class Program
 {
     static async Task<int> Main(string[] args)
     {
-        if (args.Length > 0 && args[0] == "stdio")
-        {
-            await RespondToRpcRequestsAsync(FullDuplexStream.Splice(Console.OpenStandardInput(), Console.OpenStandardOutput()), 0);
-        }
-        else
-        {
-            await NamedPipeServerAsync();
-        }
-
+        await NamedPipeServerAsync();
         return 0;
     }
 
@@ -27,8 +19,16 @@ class Program
         while (true)
         {
             await Console.Error.WriteLineAsync("Waiting for client to make a connection...");
-            var stream = new NamedPipeServerStream("StreamJsonRpcSamplePipe", PipeDirection.InOut, NamedPipeServerStream.MaxAllowedServerInstances, PipeTransmissionMode.Byte, PipeOptions.Asynchronous);
+
+            var stream = new NamedPipeServerStream(
+                "StreamJsonRpcSamplePipe",
+                PipeDirection.InOut,
+                NamedPipeServerStream.MaxAllowedServerInstances,
+                PipeTransmissionMode.Byte,
+                PipeOptions.Asynchronous);
+
             await stream.WaitForConnectionAsync();
+
             Task nowait = RespondToRpcRequestsAsync(stream, ++clientId);
         }
     }
